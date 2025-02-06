@@ -1,8 +1,9 @@
 package ${package}.entity;
 
 import lombok.Data;
+import java.util.List;
 #foreach ($column in $columns)
-#if($column.attrType == 'Date')
+#if($column.attrType == 'Date' && ($column.attrname != 'createTime' && $column.attrname != 'updateTime'))
 import java.util.Date;
 #break
 #end
@@ -13,25 +14,26 @@ import java.math.BigDecimal;
 #break
 #end
 #end
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * ${tableComment}查询条件实体
- * 
+ *
  * @author ${author} 该项目是知识星球：java突击队 的内部项目
  * @date ${datetime}
  */
-@ApiModel("${tableComment}查询条件实体")
 @Data
-public class ${className}ConditionEntity extends RequestPageEntity {
-	
-#foreach ($column in $columns)
+public class ${className}ConditionEntity extends RequestConditionEntity {
 
+   /**
+    * ID集合
+    */
+    private List<Long> idList;
+
+#foreach ($column in $columns)#if($column.attrname != 'createTime' && $column.attrname != 'updateTime')
 	/**
 	 *  $column.columnComment
      */
-	@ApiModelProperty("$column.columnComment")
 	private $column.attrType $column.attrname;
+#end
 #end
 }

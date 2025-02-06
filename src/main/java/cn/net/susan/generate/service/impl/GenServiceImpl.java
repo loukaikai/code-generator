@@ -32,6 +32,7 @@ import java.util.zip.ZipOutputStream;
 @Slf4j
 @Service
 public class GenServiceImpl implements IGenService {
+    private static final String SHARDING_TRUE = "true";
 
     @Autowired
     private GenMapper genMapper;
@@ -54,17 +55,18 @@ public class GenServiceImpl implements IGenService {
      * @param packageName  包名称
      * @param dataBaseName 库名称
      * @param tableName    表名称
+     * @param sharding     是否分库分表
      * @return 数据
      */
     @Override
-    public byte[] generatorCode(String author, String packageName, String dataBaseName, String tableName) {
-        return this.batchGeneratorCode(author, packageName, dataBaseName, tableName);
+    public byte[] generatorCode(String author, String packageName, String dataBaseName, String prefix, String tableName, String sharding) {
+        return this.batchGeneratorCode(author, packageName, dataBaseName, prefix, tableName, sharding);
     }
 
     @Override
-    public byte[] batchGeneratorCode(String author, String packageName, String dataBaseName, String tableNames) {
+    public byte[] batchGeneratorCode(String author, String packageName, String dataBaseName, String prefix, String tableNames, String sharding) {
         String[] tableNameArray = StringUtils.split(tableNames, ",");
-        return this.generatorCode(author, packageName, dataBaseName, tableNameArray);
+        return this.generatorCode(author, packageName, dataBaseName, prefix, tableNameArray, sharding);
     }
 
     /**
@@ -73,15 +75,17 @@ public class GenServiceImpl implements IGenService {
      * @param author       作者
      * @param packageName  包名称
      * @param dataBaseName 库名称
+     * @param prefix       前缀
      * @param tableNames   表数组
+     * @param sharding     是否分库分表
      * @return 数据
      */
     @Override
-    public byte[] generatorCode(String author, String packageName, String dataBaseName, String[] tableNames) {
+    public byte[] generatorCode(String author, String packageName, String dataBaseName, String prefix, String[] tableNames, String sharding) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ZipOutputStream zip = new ZipOutputStream(outputStream);
         for (String tableName : tableNames) {
-            generatorCode(author, packageName, dataBaseName, tableName, zip);
+            generatorCode(author, packageName, dataBaseName, prefix, tableName, sharding, zip);
         }
         IOUtils.closeQuietly(zip);
         return outputStream.toByteArray();
@@ -90,7 +94,8 @@ public class GenServiceImpl implements IGenService {
     /**
      * 查询表信息并生成代码
      */
-    private void generatorCode(String author, String packageName, String dataBaseName, String tableName, ZipOutputStream zip) {
+    private void generatorCode(String author, String packageName, String dataBaseName,
+                               String prefix, String tableName, String sharding, ZipOutputStream zip) {
         // 查询表信息
         TableInfo table = genMapper.selectTableByName(dataBaseName, tableName);
         // 查询列信息
@@ -98,12 +103,17 @@ public class GenServiceImpl implements IGenService {
 
         // 表名转换成Java属性名
         String className = GenUtils.tableToJava(table.getTableName());
+        if (SHARDING_TRUE.equals(sharding)) {
+            //针对分库分表的情况，删除多余的表中的数字后缀
+            className = deleteSurplusNumber(className);
+        }
         table.setClassName(className);
         table.setClassname(StringUtils.uncapitalize(className));
         // 列信息
         table.setColumns(GenUtils.transColums(columns));
         // 设置主键
         table.setPrimaryKey(table.getColumnsLast());
+        table.setPrefix(prefix);
 
         VelocityInitializer.initVelocity();
 
@@ -115,7 +125,7 @@ public class GenServiceImpl implements IGenService {
         }
         String moduleName = GenUtils.getModuleName(realPackageName);
 
-        VelocityContext context = GenUtils.getVelocityContext(author, realPackageName, table);
+        VelocityContext context = GenUtils.getVelocityContext(author, realPackageName, sharding, table);
 
         // 获取模板列表
         List<String> templates = GenUtils.getTemplates();
@@ -139,5 +149,9 @@ public class GenServiceImpl implements IGenService {
             }
         }
         log.info("渲染模成功，表名：{}", table.getTableName());
+    }
+
+    private String deleteSurplusNumber(String className) {
+        return className.replace("0", "").replace("1", "");
     }
 }

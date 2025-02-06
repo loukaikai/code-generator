@@ -66,36 +66,36 @@
                         </execution>
                     </executions>
                 </plugin>
-<!--                <plugin>-->
-<!--                    <groupId>org.apache.maven.plugins</groupId>-->
-<!--                    <artifactId>maven-checkstyle-plugin</artifactId>-->
-<!--                    <version>3.0.0</version>-->
-<!--                    <configuration>-->
-<!--                        <configLocation>checkstyle.xml</configLocation>-->
-<!--                        <encoding>UTF-8</encoding>-->
-<!--                        <failOnViolation>true</failOnViolation>-->
-<!--                        <linkXRef>false</linkXRef>-->
-<!--                        <includeTestSourceDirectory>false</includeTestSourceDirectory>-->
-<!--                        <maxAllowedViolations>0</maxAllowedViolations>-->
-<!--                        <violationSeverity>warning</violationSeverity>-->
-<!--                    </configuration>-->
-<!--                    <executions>-->
-<!--                        <execution>-->
-<!--                            <id>checkstyle</id>-->
-<!--                            <phase>validate</phase>-->
-<!--                            <goals>-->
-<!--                                <goal>check</goal>-->
-<!--                            </goals>-->
-<!--                        </execution>-->
-<!--                    </executions>-->
-<!--                    <dependencies>-->
-<!--                        <dependency>-->
-<!--                            <groupId>com.puppycrawl.tools</groupId>-->
-<!--                            <artifactId>checkstyle</artifactId>-->
-<!--                            <version>8.15</version>-->
-<!--                        </dependency>-->
-<!--                    </dependencies>-->
-<!--                </plugin>-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <configuration>
+                        <configLocation>checkstyle.xml</configLocation>
+                        <encoding>UTF-8</encoding>
+                        <failOnViolation>true</failOnViolation>
+                        <linkXRef>false</linkXRef>
+                        <includeTestSourceDirectory>false</includeTestSourceDirectory>
+                        <maxAllowedViolations>0</maxAllowedViolations>
+                        <violationSeverity>warning</violationSeverity>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>checkstyle</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>8.15</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
             </plugins>
 
         </pluginManagement>

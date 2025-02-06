@@ -3,6 +3,7 @@ package ${package}.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import cn.net.susan.entity.BaseEntity;
 #foreach ($column in $columns)
 #if($column.attrType == 'Date' && ($column.attrname != 'createTime' && $column.attrname != 'updateTime'))
 import java.util.Date;
@@ -15,8 +16,6 @@ import java.math.BigDecimal;
 #break
 #end
 #end
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * ${tableComment}实体 该项目是知识星球：java突击队 的内部项目
@@ -24,7 +23,6 @@ import io.swagger.annotations.ApiModelProperty;
  * @author ${author}
  * @date ${datetime}
  */
-@ApiModel("${tableComment}实体")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -36,7 +34,6 @@ public class ${className}Entity extends BaseEntity {
 	/**
 	 * $column.columnComment
 	 */
-	@ApiModelProperty("$column.columnComment")
 	private $column.attrType $column.attrname;
 #end
 #end

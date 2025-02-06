@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="${package}.mapper.${className}Mapper">
 
-    <resultMap type="cn.net.susan.entity.${className}Entity" id="${className}Result">
+    <resultMap type="${package}.entity.${className}Entity" id="${className}Result">
 #foreach ($column in $columns)
         <result property="${column.attrname}"    column="${column.columnName}" />
 #end
@@ -12,9 +12,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
     <sql id="paginationSql">
-        <if test="pageSize > 0">
-           LIMIT #{pageBegin} , #{pageSize}
-        </if>
+        LIMIT #{pageBegin} , #{pageSize}
     </sql>
 
 	<sql id="select${className}Column">
@@ -25,13 +23,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <sql id="queryWhere">
         <where>
-            #foreach($column in $columns)
-
-            <if test="$column.attrname != null #if($column.attrType == 'String' ) and $column.attrname != ''#end">
-                AND ${column.columnName} = #{$column.attrname}
+            <if test="idList != null and idList.size()>0">
+                AND id IN
+                <foreach collection="idList" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
             </if>
-            #end
-            AND is_del = 0
+            <if test="createBeginTime != null and createBeginTime !=''">
+                AND create_time >= #{createBeginTime}
+            </if>
+
+            <if test="createEndTime != null and createEndTime !=''">
+                AND create_time <![CDATA[<]]> #{createEndTime}
+            </if>
+#foreach($column in $columns)
+#if($column.attrname != 'createTime' && $column.attrname != 'updateTime')
+            <if test="$column.attrname != null #if($column.attrType == 'String' ) and $column.attrname != ''#end">
+               AND ${column.columnName} = #{$column.attrname}
+            </if>
+#end
+#end
+              AND is_del = 0
         </where>
     </sql>
 
@@ -44,17 +56,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <select id="searchByCondition"
-            parameterType="cn.net.susan.entity.${className}ConditionEntity"
+            parameterType="${package}.entity.${className}ConditionEntity"
             resultMap="${className}Result">
         SELECT
         <include refid="select${className}Column"/>
         FROM ${tableName}
         <include refid="queryWhere"/>
-        <include refid="paginationSql"/>
+        <include refid="${package}.mapper.BaseMapper.paginationSql"/>
     </select>
 
     <select id="searchCount"
-            parameterType="cn.net.susan.entity.${className}ConditionEntity"
+            parameterType="${package}.entity.${className}ConditionEntity"
             resultType="int">
         SELECT
         COUNT(*)
@@ -63,18 +75,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
 
-    <update id="update" parameterType="cn.net.susan.entity.${className}Entity">
+    <update id="update" parameterType="${package}.entity.${className}Entity">
         UPDATE ${tableName}
         <trim prefix="SET" suffixOverrides=",">
-            #foreach($column in $columns)
-                #if($column.columnName != $primaryKey.columnName)
-
-                    <if test="$column.attrname != null #if($column.attrType == 'String' and $column.attrname != 'updateTime') and $column.attrname != ''#end">
-                        $column.columnName = #{$column.attrname},
-                    </if>
-
-                #end
-            #end
+#foreach($column in $columns)
+#if($column.columnName != $primaryKey.columnName)
+            <if test="$column.attrname != null #if($column.attrType == 'String' and $column.attrname != 'updateTime') and $column.attrname != ''#end">
+                $column.columnName = #{$column.attrname},
+            </if>
+#end
+#end
             update_time=now(3)
         </trim>
         WHERE id = #{id}
@@ -89,28 +99,41 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </delete>
 
-    <insert id="insert" parameterType="cn.net.susan.entity.${className}Entity">
+    <insert id="insert" parameterType="${package}.entity.${className}Entity">
         INSERT INTO ${tableName}
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            #foreach($column in $columns)
-                #if($column.columnName != $primaryKey.columnName || $primaryKey.extra != 'auto_increment')
-
-                    <if test="$column.attrname != null #if($column.attrType == 'String' ) and $column.attrname != ''#end">
-                        $column.columnName,
-                    </if>
-
-                #end
-            #end
+#foreach($column in $columns)
+#if($column.columnName != $primaryKey.columnName)
+#if($column.columnName == 'create_user_id' || $column.columnName == 'create_user_name' || $column.columnName == 'create_time')
+        $column.columnName,
+#else
+        <if test="$column.attrname != null #if($column.attrType == 'String' ) and $column.attrname != ''#end">
+           $column.columnName,
+        </if>
+#end
+#else
+       id,
+#end
+#end
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            #foreach($column in $columns)
-                #if($column.columnName != $primaryKey.columnName || $primaryKey.extra != 'auto_increment')
-                    <if test="$column.attrname != null #if($column.attrType == 'String' ) and $column.attrname != ''#end">
-                        #{$column.attrname},
-                    </if>
-
-                #end
-            #end
+#foreach($column in $columns)
+#if($column.columnName != $primaryKey.columnName)
+#if($column.columnName == 'create_user_id')
+          #{CURRENT_USER_ID},
+ #elseif($column.columnName == 'create_user_name')
+          #{CURRENT_USER_NAME},
+#elseif($column.columnName == 'create_time')
+          now(3),
+ #else
+          <if test="$column.attrname != null #if($column.attrType == 'String' ) and $column.attrname != ''#end">
+             #{$column.attrname},
+          </if>
+#end
+#else
+          #{GENERATE_ID},
+#end
+#end
         </trim>
     </insert>
 
@@ -124,5 +147,4 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </select>
-
 </mapper>

@@ -2,7 +2,6 @@ package ${package}.mapper;
 
 import ${package}.entity.${className}ConditionEntity;
 import ${package}.entity.${className}Entity;
-import ${package}.mapper.BaseMapper;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -37,20 +36,20 @@ public interface ${className}Mapper extends BaseMapper<${className}Entity, ${cla
      */
 	int update(${className}Entity ${classname}Entity);
 
-	/**
+    /**
      * 批量删除${tableComment}
      *
      * @param ids id集合
      * @param entity ${tableComment}实体
      * @return 结果
      */
-	int deleteByIds(@Param("ids") List<Long> ids, @Param("entity") ${className}Entity entity);
+    int deleteByIds(@Param("ids") List<Long> ids, @Param("entity") ${className}Entity entity);
 
-	/**
+    /**
      * 批量查询${tableComment}信息
      *
      * @param ids ID集合
-     * @return 部门信息
+     * @return ${tableComment}信息
     */
-	List<${className}Entity> findByIds(List<Long> ids);
+    List<${className}Entity> findByIds(List<Long> ids);
 }

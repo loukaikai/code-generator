@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author sue
  */
-@Api(tags = "tool" , description = "代码生成工具")
+@Api(tags = "tool", description = "代码生成工具")
 @RestController
 @RequestMapping("/tool/gen")
 public class GenController {
@@ -30,28 +30,32 @@ public class GenController {
     /**
      * 生成代码
      */
-    @ApiOperation(notes = "多表代码生成接口" , value = "")
-    @GetMapping("/genCode/{author}/{packageName}/{dataBaseName}/{tableName}")
+    @ApiOperation(notes = "多表代码生成接口", value = "")
+    @GetMapping("/genCode/{author}/{packageName}/{dataBaseName}/{prefix}/{tableName}/{sharding}")
     public void genCode(HttpServletResponse response,
                         @PathVariable("author") String author,
                         @PathVariable("packageName") String packageName,
                         @PathVariable("dataBaseName") String dataBaseName,
-                        @PathVariable("tableName") String tableName) throws IOException {
-        byte[] data = genService.generatorCode(author, packageName, dataBaseName, tableName);
+                        @PathVariable("prefix") String prefix,
+                        @PathVariable("tableName") String tableName,
+                        @PathVariable("sharding") String sharding) throws IOException {
+        byte[] data = genService.generatorCode(author, packageName, dataBaseName, prefix, tableName, sharding);
         genCode(response, data);
     }
 
     /**
      * 生成代码
      */
-    @ApiOperation(notes = "多表代码生成接口" , value = "")
-    @GetMapping("/batchGenCode/{author}/{packageName}/{dataBaseName}/{tableNames}")
+    @ApiOperation(notes = "多表代码生成接口", value = "")
+    @GetMapping("/batchGenCode/{author}/{packageName}/{dataBaseName}/{prefix}/{tableNames}/{sharding}")
     public void batchGenCode(HttpServletResponse response,
-                        @PathVariable("author") String author,
-                        @PathVariable("packageName") String packageName,
-                        @PathVariable("dataBaseName") String dataBaseName,
-                        @PathVariable("tableNames") String tableNames) throws IOException {
-        byte[] data = genService.batchGeneratorCode(author, packageName, dataBaseName, tableNames);
+                             @PathVariable("author") String author,
+                             @PathVariable("packageName") String packageName,
+                             @PathVariable("dataBaseName") String dataBaseName,
+                             @PathVariable("prefix") String prefix,
+                             @PathVariable("tableNames") String tableNames,
+                             @PathVariable("sharding") String sharding) throws IOException {
+        byte[] data = genService.batchGeneratorCode(author, packageName, dataBaseName, prefix, tableNames, sharding);
         genCode(response, data);
     }
 

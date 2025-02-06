@@ -24,10 +24,12 @@ public interface IGenService {
      * @param author       作者
      * @param packageName  包名称
      * @param dataBaseName 库名称
+     * @param prefix       前缀
      * @param tableName    表名称
+     * @param sharding     是否分库分表
      * @return 数据
      */
-    byte[] generatorCode(String author, String packageName, String dataBaseName, String tableName);
+    byte[] generatorCode(String author, String packageName, String dataBaseName, String prefix, String tableName, String sharding);
 
     /**
      * 批量生成代码
@@ -35,10 +37,12 @@ public interface IGenService {
      * @param author       作者
      * @param packageName  包名称
      * @param dataBaseName 库名称
+     * @param prefix       前缀
      * @param tableNames   表名称
+     * @param sharding     是否分库分表
      * @return 数据
      */
-    byte[] batchGeneratorCode(String author, String packageName, String dataBaseName, String tableNames);
+    byte[] batchGeneratorCode(String author, String packageName, String dataBaseName, String prefix, String tableNames, String sharding);
 
     /**
      * 批量生成代码
@@ -46,8 +50,10 @@ public interface IGenService {
      * @param author       作者
      * @param packageName  包名称
      * @param dataBaseName 库名称
+     * @param prefix       前缀
      * @param tableNames   表数组
+     * @param sharding     是否分库分表
      * @return 数据
      */
-    byte[] generatorCode(String author, String packageName, String dataBaseName, String[] tableNames);
+    byte[] generatorCode(String author, String packageName, String dataBaseName, String prefix, String[] tableNames, String sharding);
 }

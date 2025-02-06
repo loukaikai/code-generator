@@ -30,6 +30,16 @@ public class GenUtils {
     private static final String TEMPLATES_PATH = "main/resources/templates";
 
     /**
+     * vue空间路径
+     */
+    private static final String VUE_PATH = "main/vue";
+
+    /**
+     * sql空间路径
+     */
+    private static final String SQL_PATH = "main/sql";
+
+    /**
      * 类型转换
      */
     public static Map<String, String> javaTypeMap = new HashMap<String, String>();
@@ -61,7 +71,7 @@ public class GenUtils {
      *
      * @return 模板列表
      */
-    public static VelocityContext getVelocityContext(String author, String packageName, TableInfo table) {
+    public static VelocityContext getVelocityContext(String author, String packageName, String sharding, TableInfo table) {
         // java对象数据传递到模板文件vm
         VelocityContext velocityContext = new VelocityContext();
         velocityContext.put("tableName", table.getTableName());
@@ -69,12 +79,14 @@ public class GenUtils {
         velocityContext.put("primaryKey", table.getPrimaryKey());
         velocityContext.put("className", table.getClassName());
         velocityContext.put("classname", table.getClassname());
+        velocityContext.put("prefix", table.getPrefix());
         velocityContext.put("moduleName", getModuleName(packageName));
         velocityContext.put("columns", table.getColumns());
         velocityContext.put("basePackage", packageName);
         velocityContext.put("package", packageName);
         velocityContext.put("author", author);
         velocityContext.put("datetime", now());
+        velocityContext.put("sharding", sharding);
         return velocityContext;
     }
 
@@ -97,6 +109,9 @@ public class GenUtils {
         templates.add("vm/java/Service.java.vm");
         templates.add("vm/java/Controller.java.vm");
         templates.add("vm/xml/Mapper.xml.vm");
+        templates.add("vm/vue/api.js.vm");
+        templates.add("vm/vue/index.vue.vm");
+        templates.add("vm/sql/sql.vm");
 //        templates.add("vm/html/list.html.vm");
 //        templates.add("vm/html/add.html.vm");
 //        templates.add("vm/html/edit.html.vm");
@@ -127,6 +142,8 @@ public class GenUtils {
         String javaPath = getProjectPath(packageName);
         String mybatisPath = MYBATIS_PATH + "/" + moduleName + "/" + className;
         String htmlPath = TEMPLATES_PATH + "/" + moduleName + "/" + classname;
+        String vuePath = VUE_PATH + "/" + classname;
+        String sqlPath = SQL_PATH + "/" + classname;
 
         if (template.contains("ConditionEntity.java.vm")) {
             return javaPath + "entity" + "/" + className + "ConditionEntity" + ".java";
@@ -150,6 +167,18 @@ public class GenUtils {
 
         if (template.contains("Mapper.xml.vm")) {
             return mybatisPath + "Mapper.xml";
+        }
+
+        if (template.contains("api.js.vm")) {
+            return vuePath + "/" + classname + ".js";
+        }
+
+        if (template.contains("index.vue.vm")) {
+            return vuePath + "/" + "index.vue";
+        }
+
+        if (template.contains("sql.vm")) {
+            return sqlPath + "/" + classname + ".sql";
         }
 
 //        if (template.contains("list.html.vm")) {

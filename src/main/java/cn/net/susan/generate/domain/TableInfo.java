@@ -42,6 +42,8 @@ public class TableInfo extends BaseEntity {
      */
     private String classname;
 
+    private String prefix;
+
     public String getTableName() {
         return tableName;
     }
@@ -96,5 +98,13 @@ public class TableInfo extends BaseEntity {
 
     public void setPrimaryKey(ColumnInfo primaryKey) {
         this.primaryKey = primaryKey;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 }

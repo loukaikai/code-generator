@@ -1,23 +1,27 @@
 package ${package}.service;
 
 import java.util.List;
+#if(${sharding} == 'true')
+import com.baomidou.dynamic.datasource.annotation.DS;
+#end
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ${package}.mapper.${className}Mapper;
 import ${package}.entity.${className}ConditionEntity;
 import ${package}.entity.${className}Entity;
 import ${package}.entity.ResponsePageEntity;
-import cn.net.susan.util.AssertUtil;
-import cn.net.susan.util.FillUserUtil;
-import cn.net.susan.mapper.BaseMapper;
-/**
+import ${package}.util.AssertUtil;
+import ${package}.util.FillUserUtil;
+import ${package}.mapper.BaseMapper;
+
+ /**
  * ${tableComment} 服务层
  *
  * @author ${author} 该项目是知识星球：java突击队 的内部项目
  * @date ${datetime}
  */
 @Service
-public class ${className}Service extends BaseService< ${className}Entity,  ${className}ConditionEntity> {
+public class ${className}Service extends BaseService<${className}Entity, ${className}ConditionEntity> {
 
 	@Autowired
 	private ${className}Mapper ${classname}Mapper;
@@ -28,6 +32,9 @@ public class ${className}Service extends BaseService< ${className}Entity,  ${cla
      * @param ${primaryKey.attrname} ${tableComment}ID
      * @return ${tableComment}信息
      */
+#if(${sharding} == 'true')
+	@DS("sharding")
+#end
 	public ${className}Entity findById(${primaryKey.attrType} ${primaryKey.attrname}) {
 	    return ${classname}Mapper.findById(${primaryKey.attrname});
 	}
@@ -38,13 +45,11 @@ public class ${className}Service extends BaseService< ${className}Entity,  ${cla
      * @param ${classname}ConditionEntity ${tableComment}信息
      * @return ${tableComment}集合
      */
+#if(${sharding} == 'true')
+	@DS("sharding")
+#end
 	public ResponsePageEntity<${className}Entity> searchByPage(${className}ConditionEntity ${classname}ConditionEntity) {
-		int count = ${classname}Mapper.searchCount(${classname}ConditionEntity);
-		if (count == 0) {
-			return ResponsePageEntity.buildEmpty(${classname}ConditionEntity);
-		}
-		List<${className}Entity> dataList = ${classname}Mapper.searchByCondition(${classname}ConditionEntity);
-		return ResponsePageEntity.build(${classname}ConditionEntity, count, dataList);
+		return super.searchByPage(${classname}ConditionEntity);
 	}
 
     /**
@@ -53,6 +58,9 @@ public class ${className}Service extends BaseService< ${className}Entity,  ${cla
      * @param ${classname}Entity ${tableComment}信息
      * @return 结果
      */
+#if(${sharding} == 'true')
+	@DS("sharding")
+#end
 	public int insert(${className}Entity ${classname}Entity) {
 	    return ${classname}Mapper.insert(${classname}Entity);
 	}
@@ -63,16 +71,22 @@ public class ${className}Service extends BaseService< ${className}Entity,  ${cla
      * @param ${classname}Entity ${tableComment}信息
      * @return 结果
      */
+#if(${sharding} == 'true')
+	@DS("sharding")
+#end
 	public int update(${className}Entity ${classname}Entity) {
 	    return ${classname}Mapper.update(${classname}Entity);
 	}
 
 	/**
-     * 批量删除${tableComment}对象
+     * 批量删除${tableComment}
      *
      * @param ids 系统ID集合
      * @return 结果
      */
+#if(${sharding} == 'true')
+	@DS("sharding")
+#end
 	public int deleteByIds(List<Long> ids) {
 		List<${className}Entity> entities = ${classname}Mapper.findByIds(ids);
 		AssertUtil.notEmpty(entities, "${tableComment}已被删除");
@@ -82,9 +96,8 @@ public class ${className}Service extends BaseService< ${className}Entity,  ${cla
 		return ${classname}Mapper.deleteByIds(ids, entity);
 	}
 
-	@Override
-	protected BaseMapper getBaseMapper() {
-		return ${classname}Mapper;
-	}
-
+    @Override
+    protected BaseMapper getBaseMapper() {
+        return ${classname}Mapper;
+    }
 }
